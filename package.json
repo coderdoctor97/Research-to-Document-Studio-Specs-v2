@@ -1,0 +1,45 @@
+{
+  "name": "research-to-document-studio",
+  "private": true,
+  "version": "0.1.0",
+  "type": "module",
+  "description": "Local-first studio that turns researched content into editable documents with PDF and DOCX export.",
+  "scripts": {
+    "dev": "vite",
+    "build": "tsc -b && vite build",
+    "preview": "vite preview",
+    "typecheck": "tsc -b --noEmit",
+    "test": "vitest run",
+    "test:watch": "vitest"
+  },
+  "dependencies": {
+    "@react-pdf/renderer": "^4.9.0",
+    "docx": "^9.13.0",
+    "dompurify": "^3.2.6",
+    "idb": "^8.0.3",
+    "jszip": "^3.10.1",
+    "mammoth": "^1.13.0",
+    "marked": "^16.4.1",
+    "pdf-lib": "^1.17.1",
+    "pdfjs-dist": "^6.4.299",
+    "react": "^18.3.1",
+    "react-dom": "^18.3.1",
+    "zod": "^4.1.12"
+  },
+  "devDependencies": {
+    "@testing-library/react": "^16.3.0",
+    "@types/dompurify": "^3.0.5",
+    "@types/node": "^24.7.2",
+    "@types/react": "^18.3.26",
+    "@types/react-dom": "^18.3.7",
+    "@vitejs/plugin-react": "^5.0.4",
+    "fake-indexeddb": "^6.2.2",
+    "jsdom": "^27.0.0",
+    "typescript": "^5.9.3",
+    "vite": "^7.1.9",
+    "vitest": "^5.0.5"
+  },
+  "allowScripts": {
+    "esbuild@0.28.2": true
+  }
+}

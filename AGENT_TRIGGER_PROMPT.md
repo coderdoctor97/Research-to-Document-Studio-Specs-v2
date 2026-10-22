@@ -1,0 +1,5 @@
+Build the MVP of Research-to-Document Studio in this repository. First inspect the existing project and its conventions, then implement incrementally according to `MVP.json` and `PRD.md`.
+
+Create a local-first hybrid application: a persistent visual web editor plus a reusable AI-agent workflow for importing and organizing researched content. Support file upload, paste, and drag-and-drop; normalize content into a versioned JSON document model; preserve original text, citations, image/video URLs, attribution, and source provenance; and provide editable, reorderable blocks.
+
+Prioritize reliable, validated PDF and genuinely editable DOCX exports. Use mature libraries, keep import/editor/storage/AI/export modules separated, sanitize imported HTML, never execute imported scripts, and do not silently rewrite or discard content. Inspect before changing architecture, implement in phases, run relevant tests, and report what works, what was tested, and any remaining limitations. Do not claim features work unless verified.

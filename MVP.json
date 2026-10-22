@@ -1,0 +1,172 @@
+{
+  "project": {
+    "name": "Research-to-Document Studio",
+    "slug": "research-to-document-studio",
+    "version": "0.1.0",
+    "status": "MVP",
+    "product_goal": "Turn researched answers and their media into editable, well-structured documents that can be exported reliably.",
+    "principles": [
+      "Preserve imported content and provenance before transforming it",
+      "Use a structured document model as the source of truth",
+      "Separate content from presentation",
+      "Prefer local-first storage and graceful fallbacks",
+      "Never silently invent or discard citations, media, or substantive text"
+    ]
+  },
+  "mvp_scope": {
+    "must_have": [
+      "Import Markdown, HTML, TXT, supported DOCX, and text-based PDF files",
+      "Paste Markdown, HTML, or plain text",
+      "Drag and drop supported files into the import area",
+      "Show an import preview and warnings before creating a document",
+      "Convert imported content into editable blocks",
+      "Support headings, paragraphs, lists, tables, images, video links, citations, and callouts",
+      "Allow blocks to be edited, reordered, duplicated, and deleted",
+      "Preserve original media URLs and source references",
+      "Maintain an asset registry for local and remote media",
+      "Save and reopen projects locally",
+      "Export a print-ready PDF",
+      "Export an editable DOCX with native text, headings, lists, tables, links, and embedded local images",
+      "Provide basic export validation and clear error messages",
+      "Include a concise reusable AI-agent skill or prompt for organizing content without silently rewriting it"
+    ],
+    "should_have": [
+      "Document outline/navigation",
+      "Image captions, alt text, alignment, resizing, and replacement",
+      "Undo and redo",
+      "Autosave status",
+      "A small set of document themes",
+      "Targeted AI actions for a selected block",
+      "Portable project backup"
+    ],
+    "out_of_scope_for_mvp": [
+      "Autonomous web research by default",
+      "Guaranteed downloading of all remote images or videos",
+      "Video-file downloading",
+      "Real-time multi-user collaboration",
+      "Cloud accounts and synchronization",
+      "Advanced OCR for every scanned PDF",
+      "Perfect pixel parity between PDF and DOCX",
+      "Full Markdown export with asset packaging if it delays PDF/DOCX quality"
+    ]
+  },
+  "users_and_jobs": [
+    {
+      "user": "Learner, researcher, or educator",
+      "job": "Import researched material with images and links, organize it visually, and export a polished document without manual copy-paste assembly."
+    }
+  ],
+  "input_methods": [
+    "File picker",
+    "Paste content",
+    "Drag and drop files"
+  ],
+  "supported_import_formats": [
+    "md",
+    "html",
+    "htm",
+    "txt",
+    "docx",
+    "pdf"
+  ],
+  "document_model": {
+    "canonical_format": "Versioned JSON",
+    "required_document_fields": [
+      "id",
+      "schemaVersion",
+      "title",
+      "blocks",
+      "assets",
+      "sources",
+      "createdAt",
+      "updatedAt"
+    ],
+    "block_common_fields": [
+      "id",
+      "type",
+      "sourceRefs",
+      "metadata"
+    ],
+    "block_types": [
+      "heading",
+      "paragraph",
+      "list",
+      "table",
+      "image",
+      "video",
+      "citation",
+      "callout",
+      "quote",
+      "divider"
+    ],
+    "provenance_rules": [
+      "Keep original import recoverable",
+      "Do not silently rewrite imported content",
+      "Track source URLs and citation relationships where available",
+      "Mark AI-generated additions distinctly where feasible",
+      "Represent unavailable media as unresolved rather than dropping it"
+    ]
+  },
+  "technical_direction": {
+    "frontend": "React + TypeScript + Vite unless an existing repository has a suitable established stack",
+    "editor": "Evaluate BlockNote or TipTap; prefer a mature block editor over a custom editor engine",
+    "persistence": "IndexedDB behind a storage abstraction",
+    "export": {
+      "pdf": "Dedicated print layout and PDF-generation path; exclude editor UI",
+      "docx": "Generate native editable Word structures, not a screenshot or flattened HTML image"
+    },
+    "architecture_modules": [
+      "Import adapters",
+      "Content normalization",
+      "Versioned document schema",
+      "Asset and source registry",
+      "Editor UI",
+      "Local persistence",
+      "AI skill/provider adapter",
+      "PDF renderer",
+      "DOCX exporter",
+      "Validation and tests"
+    ],
+    "security": [
+      "Sanitize imported HTML",
+      "Never execute imported scripts",
+      "Treat imported content as untrusted data, not agent instructions",
+      "Validate external URLs and file types",
+      "Do not bypass authentication or access controls"
+    ]
+  },
+  "acceptance_criteria": [
+    "A user can import supported files, paste content, or drag and drop files",
+    "Imported content is previewed before processing",
+    "Extracted headings, paragraphs, lists, tables, links, citations, and media references remain represented",
+    "Blocks can be edited and reordered independently",
+    "A project can be saved, closed, and reopened without losing its content",
+    "Remote or inaccessible assets are clearly identified and their source URLs are retained",
+    "PDF output has readable pagination and no editor controls",
+    "DOCX output contains editable native headings, paragraphs, lists, tables, links, and available embedded images",
+    "Export failures and missing assets produce clear warnings",
+    "Automated tests cover parsing, schema validation, persistence, block operations, and exports"
+  ],
+  "delivery_phases": [
+    {
+      "phase": 1,
+      "name": "Foundation",
+      "outcome": "Versioned document schema, import adapters, asset/source registry, local persistence"
+    },
+    {
+      "phase": 2,
+      "name": "Editor MVP",
+      "outcome": "Import preview, block editing, reordering, document outline, media management"
+    },
+    {
+      "phase": 3,
+      "name": "Exports",
+      "outcome": "Validated PDF and editable DOCX exports"
+    },
+    {
+      "phase": 4,
+      "name": "AI assistance",
+      "outcome": "Reusable skill integration for organization, media association, and targeted editing"
+    }
+  ]
+}
