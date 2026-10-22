@@ -644,7 +644,7 @@ export function Editor({ projectId, onBack, onOpenProject, onNotify }: EditorPro
           <p className="muted small updated-note">Edited {relativeDate(studioDocument.updatedAt)}</p>
         </aside>
 
-        <main className="editor-canvas">
+        <main className="editor-canvas" id="editor-canvas" tabIndex={-1}>
           <div className="canvas-toolbar">
             <div>
               <p className="eyebrow">Draft</p>

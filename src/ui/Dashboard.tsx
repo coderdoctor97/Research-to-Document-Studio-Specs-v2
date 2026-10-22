@@ -210,7 +210,18 @@ export function Dashboard({ onOpenProject, onNotify }: DashboardProps) {
           </div>
         ) : projects.length === 0 ? (
           <div className="empty-library">
-            <div className="empty-library-mark" aria-hidden="true">▤</div>
+            <div className="empty-library-mark" aria-hidden="true">
+              <svg width="26" height="26" viewBox="0 0 24 24" fill="none">
+                <path
+                  d="M6 3.75h9.5L19 7.25v10.5A2.5 2.5 0 0 1 16.5 20.25h-10.5A2.5 2.5 0 0 1 3.5 17.75V6.25A2.5 2.5 0 0 1 6 3.75Z"
+                  stroke="currentColor"
+                  strokeWidth="1.3"
+                  strokeLinejoin="round"
+                />
+                <path d="M15.25 3.9v3.4h3.4" stroke="currentColor" strokeWidth="1.3" strokeLinejoin="round" />
+                <path d="M7.5 12.5h7M7.5 16h4.5" stroke="currentColor" strokeWidth="1.3" strokeLinecap="round" />
+              </svg>
+            </div>
             <h3>No projects yet</h3>
             <p>Import a document or start blank. Your work is stored in IndexedDB on this device.</p>
             <div className="button-row">

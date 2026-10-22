@@ -176,3 +176,14 @@ npm run typecheck  # tsc --noEmit
 npm test           # Vitest run
 npm run test:watch # Vitest watch mode
 ```
+
+## Design
+
+The interface was rebuilt on a single-accent design system: self-hosted Geist, Source Serif 4 and
+Geist Mono (no webfont CDN, so it renders identically offline), one clay accent on one warm gray
+family, a token layer for radius / z-index / motion, and hover, pressed and focus states on every
+control. See [`REDESIGN.md`](REDESIGN.md) for the audit that drove it and
+[`docs/before-after/`](docs/before-after) for matched screenshots of each surface.
+
+Fonts live in `public/fonts` (8 `woff2` faces, ~412 KB) and are licensed under the
+SIL Open Font License. The UI itself has no runtime network dependency.

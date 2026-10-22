@@ -1,0 +1,20 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="1200" height="630" viewBox="0 0 1200 630">
+  <defs>
+    <radialGradient id="wash" cx="18%" cy="0%" r="80%">
+      <stop offset="0%" stop-color="#a14a28" stop-opacity="0.16"/>
+      <stop offset="100%" stop-color="#a14a28" stop-opacity="0"/>
+    </radialGradient>
+  </defs>
+  <rect width="1200" height="630" fill="#f5f0e7"/>
+  <rect width="1200" height="630" fill="url(#wash)"/>
+  <g font-family="Georgia, 'Source Serif 4', serif" fill="#211d18">
+    <text x="80" y="150" font-size="26" letter-spacing="6" fill="#75695c" font-family="monospace">LOCAL-FIRST · NO ACCOUNT</text>
+    <text x="80" y="290" font-size="78" letter-spacing="-2">Turn source material into</text>
+    <text x="80" y="378" font-size="78" letter-spacing="-2">a document you can defend.</text>
+  </g>
+  <g font-family="monospace" font-size="22" fill="#3d372f">
+    <text x="80" y="500">MD · HTML · TXT · DOCX · TEXT PDF</text>
+    <text x="80" y="542" fill="#a14a28">VALIDATED PDF + EDITABLE DOCX EXPORT</text>
+  </g>
+  <rect x="80" y="440" width="2" height="120" fill="#a14a28"/>
+</svg>

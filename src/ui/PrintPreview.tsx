@@ -4,6 +4,34 @@ import type { Block, Document as StudioDocument, ListBlock, Source } from '../mo
 import { getTheme, themeCssVariables } from '../export/theme'
 import { resolveDocumentImages, type ResolvedImage } from '../export/images'
 import { InlineContent } from './Inline'
+/** Plain text of an inline-HTML field, for comparing against the document title. */
+function plainText(html: string): string {
+  return html
+    .replace(/<[^>]*>/g, ' ')
+    .replace(/&nbsp;/g, ' ')
+    .replace(/&amp;/g, '&')
+    .replace(/&lt;/g, '<')
+    .replace(/&gt;/g, '>')
+    .replace(/&quot;/g, '"')
+    .replace(/&#39;/g, "'")
+    .replace(/\s+/g, ' ')
+    .trim()
+    .toLowerCase()
+}
+
+/**
+ * The PDF and DOCX exporters emit the document title as metadata and a running
+ * footer, not as a heading block. When the first block is already a level-1
+ * heading carrying that same title, printing a masthead above it produced the
+ * title twice and made the preview disagree with the export.
+ */
+function repeatsDocumentTitle(blocks: Block[], title: string): boolean {
+  const first = blocks[0]
+  if (!first || first.type !== 'heading' || first.level !== 1) return false
+  const wanted = title.trim().toLowerCase()
+  return wanted.length > 0 && plainText(first.html) === wanted
+}
+
 
 function PreviewList({ block }: { block: ListBlock }) {
   const counters: number[] = []
@@ -201,9 +229,11 @@ export function PrintPreview({ open, document: studioDocument, onClose }: PrintP
           className={`print-sheet page-${pageSize}`}
           style={themeCssVariables(theme) as React.CSSProperties}
         >
-          <header className="print-title">
-            <h1>{studioDocument.title || 'Untitled document'}</h1>
-          </header>
+          {repeatsDocumentTitle(studioDocument.blocks, studioDocument.title || 'Untitled document') ? null : (
+            <header className="print-title">
+              <h1>{studioDocument.title || 'Untitled document'}</h1>
+            </header>
+          )}
           {studioDocument.blocks.length === 0 ? (
             <p className="muted">This document has no content yet.</p>
           ) : (

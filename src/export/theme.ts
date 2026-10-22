@@ -46,7 +46,7 @@ export const THEMES: Record<Theme, ThemeDefinition> = {
     description: 'Sans-serif text, strong headings, blue accents.',
     pdfFontFamily: 'Helvetica',
     docxFontFamily: 'Arial',
-    printFontFamily: 'Inter, "Segoe UI", Arial, sans-serif',
+    printFontFamily: 'Geist, "Segoe UI", Arial, sans-serif',
     bodyPt: 10.5,
     lineHeight: 1.55,
     headingSizes: [26, 20, 16.5, 14, 12.5, 11.5],

@@ -1,2 +1,60 @@
-# Auto detect text files and perform LF normalization
-* text=auto
+# ---------------------------------------------------------------
+# Normalize line endings on checkout so the repository stays LF.
+# ---------------------------------------------------------------
+* text=auto eol=lf
+
+# ---------------------------------------------------------------
+# Source
+# ---------------------------------------------------------------
+*.ts   text eol=lf
+*.tsx  text eol=lf
+*.js   text eol=lf
+*.mjs  text eol=lf
+*.json text eol=lf
+*.css  text eol=lf
+*.html text eol=lf
+*.md   text eol=lf
+*.svg  text eol=lf
+*.yml  text eol=lf
+*.yaml text eol=lf
+
+# ---------------------------------------------------------------
+# Windows launchers
+# setup.bat and start.bat must keep CRLF or cmd.exe can misparse
+# them. Git is told explicitly, and diff is disabled for them.
+# ---------------------------------------------------------------
+*.bat text eol=crlf
+*.cmd text eol=crlf
+
+# ---------------------------------------------------------------
+# Binary assets — never diff or convert
+# ---------------------------------------------------------------
+*.woff2 binary
+*.woff  binary
+*.ttf   binary
+*.otf   binary
+*.png   binary
+*.jpg   binary
+*.jpeg  binary
+*.gif   binary
+*.webp  binary
+*.ico   binary
+*.pdf   binary
+*.docx  binary
+*.xlsx  binary
+*.zip   binary
+
+# ---------------------------------------------------------------
+# Generated / vendored files
+# ---------------------------------------------------------------
+package-lock.json linguist-generated=true
+public/fonts/**   linguist-vendored=true
+
+# ---------------------------------------------------------------
+# Keep exports clean
+# ---------------------------------------------------------------
+.github/          export-ignore
+docs/             export-ignore
+tests/            export-ignore
+.gitattributes    export-ignore
+.gitignore        export-ignore

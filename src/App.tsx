@@ -31,6 +31,11 @@ export function App() {
 
   return (
     <>
+      {view.kind === 'editor' ? (
+        <a className="skip-link" href="#editor-canvas">
+          Skip to document
+        </a>
+      ) : null}
       {view.kind === 'dashboard' ? (
         <Dashboard
           onOpenProject={(projectId) => setView({ kind: 'editor', projectId })}
