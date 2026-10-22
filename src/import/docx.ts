@@ -13,12 +13,12 @@ export async function importDocx(file: File): Promise<ImportPreview> {
     result = await mammoth.convertToHtml(input)
   } catch (error) {
     throw new ImportError(
-      `The DOCX file could not be read. ${error instanceof Error ? error.message : 'The file may be damaged.'}`,
+      `The DOCX file could not be read — it may be damaged. Try re-exporting it from Word, then import again.${error instanceof Error ? ` (${error.message})` : ''}`,
     )
   }
 
   if (!result.value.trim()) {
-    throw new ImportError('No readable content was found in this DOCX file.')
+    throw new ImportError('No readable content was found in this DOCX file. It may hold only images or scanned pages — add real text in Word, then import again.')
   }
 
   const warnings: ImportWarning[] = result.messages.map((message) => ({
@@ -30,7 +30,7 @@ export async function importDocx(file: File): Promise<ImportPreview> {
     code: 'docx-fidelity',
     severity: 'info',
     message:
-      'DOCX import keeps supported headings, text, lists, tables and embedded images. Complex layouts and floating objects may be simplified.',
+      'What carries over: headings, text, lists, tables and embedded images. Complex layouts and floating objects may be simplified — check the sample below.',
   })
 
   const preview = importHtml({

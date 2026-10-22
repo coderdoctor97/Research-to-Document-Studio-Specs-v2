@@ -15,7 +15,7 @@ export interface TextImportRequest {
 export function importText(request: TextImportRequest): ImportPreview {
   const text = request.text.replace(/\r\n?/g, '\n')
   if (!text.trim()) {
-    throw new ImportError('The text file is empty.')
+    throw new ImportError('There is no text to import. Choose or paste content with readable text.')
   }
 
   const format = request.format ?? 'txt'

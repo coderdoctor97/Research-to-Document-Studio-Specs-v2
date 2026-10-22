@@ -9,7 +9,7 @@ export function unsafeLinkWarnings(document: Document): ExportWarning[] {
     if (isSafeLinkHref(url)) return
     warnings.push({
       code: 'unsafe-export-link',
-      message: `${context} has a URL that is not http(s) or mailto. It is shown as text and is not clickable in exports.`,
+      message: `${context} links to an address that isn't a web (http/https) or email link, so it appears as plain text — not clickable — in exports.`,
       blockId,
     })
   }

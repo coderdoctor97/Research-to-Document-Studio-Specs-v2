@@ -39,7 +39,7 @@ export function Dashboard({ onOpenProject, onNotify }: DashboardProps) {
       setProjects(list)
       setStorage(estimate)
     } catch (caught) {
-      setError(caught instanceof Error ? caught.message : 'Projects could not be loaded.')
+      setError(caught instanceof Error ? caught.message : 'Something went wrong reading local storage.')
     } finally {
       setLoading(false)
     }
@@ -57,7 +57,7 @@ export function Dashboard({ onOpenProject, onNotify }: DashboardProps) {
       await saveDocument(document)
       onOpenProject(document.id)
     } catch (caught) {
-      onNotify(caught instanceof Error ? caught.message : 'The project could not be created.', 'error')
+      onNotify(caught instanceof Error ? caught.message : "Couldn't create the project. Try again.", 'error')
     } finally {
       setCreating(false)
     }
@@ -68,7 +68,7 @@ export function Dashboard({ onOpenProject, onNotify }: DashboardProps) {
     await saveDocument(document)
     setImportOpen(false)
     setImportFile(null)
-    onNotify(`Imported "${document.title}" with ${document.blocks.length} blocks.`)
+    onNotify(`Imported "${document.title}" — ${document.blocks.length} block${document.blocks.length === 1 ? '' : 's'} ready to edit.`)
     onOpenProject(document.id)
   }
 
@@ -77,16 +77,16 @@ export function Dashboard({ onOpenProject, onNotify }: DashboardProps) {
     try {
       await duplicateProject(project.id)
       await refresh()
-      onNotify(`Duplicated "${project.title}".`)
+      onNotify(`Duplicated as "${project.title} copy".`)
     } catch (caught) {
-      onNotify(caught instanceof Error ? caught.message : 'The project could not be duplicated.', 'error')
+      onNotify(caught instanceof Error ? caught.message : "Couldn't duplicate the project. Try again.", 'error')
     } finally {
       setBusyId(null)
     }
   }
 
   const handleDelete = async (project: ProjectSummary) => {
-    const ok = window.confirm(`Delete "${project.title}"? This removes the project from this browser. Download any export you need first.`)
+    const ok = window.confirm(`"${project.title}" will be removed from this browser and can't be recovered. Export a copy first if you still need it.\n\nDelete this project?`)
     if (!ok) return
     setBusyId(project.id)
     try {
@@ -94,7 +94,7 @@ export function Dashboard({ onOpenProject, onNotify }: DashboardProps) {
       await refresh()
       onNotify(`Deleted "${project.title}".`)
     } catch (caught) {
-      onNotify(caught instanceof Error ? caught.message : 'The project could not be deleted.', 'error')
+      onNotify(caught instanceof Error ? caught.message : "Couldn't delete the project. Try again.", 'error')
     } finally {
       setBusyId(null)
     }
@@ -102,7 +102,7 @@ export function Dashboard({ onOpenProject, onNotify }: DashboardProps) {
 
   const openWithFile = (file: File) => {
     if (!formatFromFileName(file.name)) {
-      onNotify('Use Markdown, HTML, TXT, DOCX or a text-based PDF.', 'error')
+      onNotify("That file type can't be imported. Use Markdown, HTML, TXT, DOCX or a text-based PDF.", 'error')
       return
     }
     setImportFile(file)
@@ -137,7 +137,7 @@ export function Dashboard({ onOpenProject, onNotify }: DashboardProps) {
           <span className="brand-mark" aria-hidden="true">R</span>
           <div>
             <strong>Research-to-Document Studio</strong>
-            <span className="muted small">Local-first writing workspace</span>
+            <span className="muted small">Documents that never leave your device</span>
           </div>
         </div>
         <div className="local-badge" title="No server, no account, no telemetry">
@@ -150,34 +150,34 @@ export function Dashboard({ onOpenProject, onNotify }: DashboardProps) {
           <p className="eyebrow">Research → editable document</p>
           <h1>Turn source material into a document you can defend.</h1>
           <p className="hero-copy">
-            Import research, keep every original and source, shape it block by block, then export a validated PDF or an editable Word file. Everything stays in this browser.
+            Keep every original, source link and image attached while you shape your research block by block — then download a checked PDF or an editable Word file. Nothing leaves this browser.
           </p>
           <div className="hero-actions">
             <button type="button" className="button primary large" onClick={() => setImportOpen(true)}>
               Import research
             </button>
             <button type="button" className="button secondary large" onClick={() => void createBlank()} disabled={creating}>
-              {creating ? 'Creating…' : 'New blank document'}
+              {creating ? 'Starting your document…' : 'New blank document'}
             </button>
           </div>
-          <p className="hero-formats">MD · HTML · TXT · DOCX · text PDF · paste · drag and drop</p>
+          <p className="hero-formats">Works with MD · HTML · TXT · DOCX · text-based PDF — or just paste, or drop a file anywhere</p>
         </div>
         <aside className="hero-card">
-          <p className="eyebrow">What is preserved</p>
+          <p className="eyebrow">What you never lose</p>
           <ul>
-            <li>Untouched original imports, downloadable later</li>
-            <li>Source URLs and citation blocks</li>
-            <li>Local image files and remote image references</li>
-            <li>Extraction warnings shown before import</li>
+            <li>Your original files, untouched and downloadable anytime</li>
+            <li>Every source link and citation, kept with the text it supports</li>
+            <li>Images saved on this device, plus links to remote ones</li>
+            <li>A chance to check warnings before anything is imported</li>
           </ul>
           <div className="hero-card-footer">
             {storage ? (
               <>
-                <span>{formatBytes(storage.usage)} used locally</span>
-                <span className="muted small">of {formatBytes(storage.quota)} available</span>
+                <span>{formatBytes(storage.usage)} used on this device</span>
+                <span className="muted small">of {formatBytes(storage.quota)} your browser allows</span>
               </>
             ) : (
-              <span className="muted small">Storage estimate unavailable in this browser</span>
+              <span className="muted small">This browser doesn't report free local storage</span>
             )}
           </div>
         </aside>
@@ -204,7 +204,7 @@ export function Dashboard({ onOpenProject, onNotify }: DashboardProps) {
           </div>
         ) : error ? (
           <div className="alert error">
-            <strong>Local storage could not be read.</strong>
+            <strong>Couldn't load your projects.</strong>
             <p>{error}</p>
             <button type="button" className="button secondary compact" onClick={() => void refresh()}>Try again</button>
           </div>
@@ -223,10 +223,10 @@ export function Dashboard({ onOpenProject, onNotify }: DashboardProps) {
               </svg>
             </div>
             <h3>No projects yet</h3>
-            <p>Import a document or start blank. Your work is stored in IndexedDB on this device.</p>
+            <p>Import research to turn it into an editable, source-backed document, or start from a blank page. Everything is saved only on this device.</p>
             <div className="button-row">
               <button type="button" className="button primary" onClick={() => setImportOpen(true)}>Import research</button>
-              <button type="button" className="button secondary" onClick={() => void createBlank()}>Create blank</button>
+              <button type="button" className="button secondary" onClick={() => void createBlank()}>New blank document</button>
             </div>
           </div>
         ) : (
@@ -250,15 +250,15 @@ export function Dashboard({ onOpenProject, onNotify }: DashboardProps) {
       </section>
 
       <footer className="dashboard-footer">
-        <span>PDF and DOCX exports are validated from the generated bytes before download.</span>
-        <span>Scripts in imported content are never executed.</span>
+        <span>Every PDF and Word export is checked before it downloads — an invalid file never reaches you.</span>
+        <span>Imported scripts are stripped out and never run.</span>
       </footer>
 
       {dragActive ? (
         <div className="drop-overlay" aria-hidden="true">
           <div>
             <span className="drop-mark">↓</span>
-            <strong>Drop to preview an import</strong>
+            <strong>Drop to see what will import</strong>
             <span>Markdown, HTML, TXT, DOCX or text-based PDF</span>
           </div>
         </div>

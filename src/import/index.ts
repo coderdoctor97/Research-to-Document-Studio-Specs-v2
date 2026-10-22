@@ -20,13 +20,13 @@ export async function importFile(file: File): Promise<ImportPreview> {
     )
   }
   if (file.size === 0) {
-    throw new ImportError('This file is empty.')
+    throw new ImportError('This file is empty — there is nothing to import. Choose a file with readable text.')
   }
 
   const format = formatFromFileName(file.name) ?? resolveImportFormat(file)
   if (!format) {
     throw new ImportError(
-      'Unsupported file type. Import Markdown, HTML, TXT, DOCX, or a text-based PDF.',
+      "That file type can't be imported. Use Markdown, HTML, TXT, DOCX, or a text-based PDF.",
     )
   }
 
@@ -57,7 +57,7 @@ export async function importFile(file: File): Promise<ImportPreview> {
 
 export function importPaste(mode: PasteMode, text: string): ImportPreview {
   if (!text.trim()) {
-    throw new ImportError('Paste some content before previewing the import.')
+    throw new ImportError('Paste some content first — then preview what will import.')
   }
   const original: ImportPreview['original'] = { kind: 'paste', text }
   if (mode === 'html') {

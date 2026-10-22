@@ -88,16 +88,16 @@ function describeStorageError(error: unknown, action: string): StorageError {
   const name = error instanceof DOMException ? error.name : ''
   if (name === 'QuotaExceededError' || name === 'NS_ERROR_DOM_QUOTA_REACHED') {
     return new StorageError(
-      `Local storage is full while trying to ${action}. Download a project backup, then remove unused projects or images.`,
+      `Couldn't ${action} — browser storage on this device is full. Export anything you need to keep, then delete old projects or large images and try again.`,
     )
   }
   if (name === 'SecurityError' || name === 'InvalidStateError') {
     return new StorageError(
-      `The browser blocked local storage while trying to ${action}. Private browsing can disable IndexedDB.`,
+      `Couldn't ${action} — your browser blocked local saving, which private or incognito windows often do. Try a regular window so your work can be saved on this device.`,
     )
   }
   const detail = error instanceof Error ? error.message : String(error)
-  return new StorageError(`Could not ${action}: ${detail}`)
+  return new StorageError(`Couldn't ${action}. ${detail}`)
 }
 
 export interface ProjectSummary {
@@ -133,7 +133,7 @@ export async function listProjects(): Promise<ProjectSummary[]> {
 export async function saveDocument(document: Document): Promise<void> {
   const parsed = safeParseDocument(document)
   if (!parsed.success || !parsed.document) {
-    throw new StorageError(`Project was not saved: ${parsed.error ?? 'invalid document data'}`)
+    throw new StorageError(`Project was not saved — its data didn't validate. (${parsed.error ?? 'invalid document data'})`)
   }
   try {
     const db = await database()
@@ -154,12 +154,12 @@ export async function loadDocument(projectId: string): Promise<Document> {
     const db = await database()
     const project = await db.get('projects', projectId)
     if (!project) {
-      throw new StorageError('This project no longer exists in local storage.')
+      throw new StorageError('This project no longer exists on this device. It may have been deleted, or browser storage was cleared.')
     }
     const parsed = safeParseDocument(project.document)
     if (!parsed.success || !parsed.document) {
       throw new StorageError(
-        `This project could not be opened: ${parsed.error ?? 'invalid document data'}`,
+        `This project couldn't be opened: ${parsed.error ?? 'its saved data is invalid'}`,
       )
     }
     return parsed.document
@@ -193,7 +193,7 @@ export async function duplicateProject(projectId: string): Promise<Document> {
 
 export async function saveAssetBlob(assetId: string, blob: Blob, mimeType?: string): Promise<void> {
   if (blob.size === 0) {
-    throw new StorageError('An empty image file cannot be stored.')
+    throw new StorageError("That image file is empty, so it couldn't be saved. Choose a different file.")
   }
   try {
     const db = await database()
@@ -238,7 +238,7 @@ export async function saveImportOriginal(
       original.blob ??
       new Blob([original.text ?? ''], { type: original.mimeType || 'text/plain;charset=utf-8' })
     if (blob.size === 0) {
-      throw new StorageError('The original import was empty and could not be stored.')
+      throw new StorageError('The original was empty, so there was nothing to keep for later download.')
     }
     const db = await database()
     await db.put('imports', {

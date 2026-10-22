@@ -188,7 +188,7 @@ function buildBlocks(
     warn(
       warnings,
       'pdf-headings',
-      'Headings in this PDF were inferred from text size and may need correction.',
+      'Headings in this PDF were guessed from text size — check them in the outline and fix any that look wrong.',
       'info',
     )
   }
@@ -209,7 +209,7 @@ export async function importPdf(file: File): Promise<ImportPreview> {
     pdf = await loadingTask.promise
   } catch (error) {
     throw new ImportError(
-      `The PDF file could not be opened. ${error instanceof Error ? error.message : 'The file may be damaged or encrypted.'}`,
+      `The PDF file could not be opened — it may be damaged or password-protected. Try a fresh, unlocked copy.${error instanceof Error ? ` (${error.message})` : ''}`,
     )
   }
 
@@ -244,7 +244,7 @@ export async function importPdf(file: File): Promise<ImportPreview> {
         warn(
           warnings,
           'pdf-links',
-          `Links on PDF page ${pageNumber} could not be read.`,
+          `Links on PDF page ${pageNumber} couldn't be read, so they won't appear under Sources.`,
           'info',
         )
       }
@@ -262,7 +262,7 @@ export async function importPdf(file: File): Promise<ImportPreview> {
     const textPageCount = pages.filter((page) => page.hasText).length
     if (textPageCount === 0) {
       throw new ImportError(
-        'This PDF contains no extractable text. It is probably scanned; OCR is not supported in this MVP.',
+        'This PDF has no readable text — it is probably scanned images. Run it through OCR to make a text version, then import that.',
       )
     }
     if (textPageCount < pages.length) {
@@ -270,7 +270,7 @@ export async function importPdf(file: File): Promise<ImportPreview> {
       warn(
         warnings,
         'pdf-empty-pages',
-        `No text was extracted from PDF page${missing.length > 1 ? 's' : ''} ${missing.join(', ')}. They may be scanned images.`,
+        `No text was extracted from PDF page${missing.length > 1 ? 's' : ''} ${missing.join(', ')} — they may be scanned images. If those pages matter, OCR them and import the text.`,
       )
     }
 
@@ -282,13 +282,13 @@ export async function importPdf(file: File): Promise<ImportPreview> {
     warn(
       warnings,
       'pdf-layout',
-      'PDF import infers paragraphs from text position. Multi-column layouts may be merged; verify the reading order.',
+      'Paragraphs are guessed from text position, so multi-column layouts may be merged — check the reading order in the preview.',
       'info',
     )
 
     const blocks = buildBlocks(pages, linksByPage, warnings)
     if (blocks.length === 0) {
-      throw new ImportError('No readable text blocks could be built from this PDF.')
+      throw new ImportError('No readable text could be taken from this PDF. Try a text-based PDF, or copy the text and use Paste instead.')
     }
 
     const metadata = await pdf.getMetadata().catch(() => null)

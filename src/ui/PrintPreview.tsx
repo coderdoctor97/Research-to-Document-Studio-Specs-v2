@@ -61,7 +61,7 @@ function PreviewImage({ block, image }: { block: Extract<Block, { type: 'image' 
       ) : (
         <div className="preview-image-placeholder" style={{ width: `${block.widthPercent}%` }}>
           <strong>Image unavailable</strong>
-          <span>{block.alt || block.url || 'No image source'}</span>
+          <span>{block.alt || block.url || 'No image file or link'}</span>
         </div>
       )}
       {block.caption ? <figcaption>{block.caption}</figcaption> : null}
@@ -235,7 +235,7 @@ export function PrintPreview({ open, document: studioDocument, onClose }: PrintP
             </header>
           )}
           {studioDocument.blocks.length === 0 ? (
-            <p className="muted">This document has no content yet.</p>
+            <p className="muted">Nothing to print yet — this document is empty.</p>
           ) : (
             studioDocument.blocks.map((block) => <PreviewBlock key={block.id} block={block} images={images} />)
           )}

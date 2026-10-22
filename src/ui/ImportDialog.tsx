@@ -84,12 +84,12 @@ export function ImportDialog({
     try {
       if (file.size > MAX_IMPORT_BYTES) {
         throw new ImportError(
-          `This file is ${formatBytes(file.size)}. The limit is ${formatBytes(MAX_IMPORT_BYTES)}.`,
+          `This file is ${formatBytes(file.size)} — over the ${formatBytes(MAX_IMPORT_BYTES)} limit. Split it, or paste just the section you need.`,
         )
       }
       if (!formatFromFileName(file.name)) {
         throw new ImportError(
-          `Unsupported file type. Use ${SUPPORTED_EXTENSIONS.map((extension) => `.${extension}`).join(', ')}.`,
+          `That file type can't be imported. Use ${SUPPORTED_EXTENSIONS.map((extension) => `.${extension}`).join(', ')}.`,
         )
       }
       const result = await importFile(file)
@@ -98,7 +98,7 @@ export function ImportDialog({
       setPreviewTitle(result.title)
     } catch (caught) {
       if (requestRef.current !== request) return
-      setError(caught instanceof Error ? caught.message : 'The file could not be imported.')
+      setError(caught instanceof Error ? caught.message : "Couldn't read that file. Check it opens elsewhere, then try again.")
     } finally {
       if (requestRef.current === request) setBusy(false)
     }
@@ -138,7 +138,7 @@ export function ImportDialog({
       setPreviewTitle(result.title)
       setFileName('')
     } catch (caught) {
-      setError(caught instanceof Error ? caught.message : 'The pasted content could not be read.')
+      setError(caught instanceof Error ? caught.message : "Couldn't read that pasted content. Try a different format above — Markdown, HTML or plain text.")
     }
   }
 
@@ -149,7 +149,7 @@ export function ImportDialog({
     try {
       await onCommit({ ...preview, title: previewTitle.trim() || preview.title }, target)
     } catch (caught) {
-      setError(caught instanceof Error ? caught.message : 'The import could not be saved.')
+      setError(caught instanceof Error ? caught.message : "Couldn't save the import. Your preview is still here — try again.")
       setBusy(false)
     }
   }
@@ -171,7 +171,7 @@ export function ImportDialog({
       <section className="modal import-dialog" role="dialog" aria-modal="true" aria-labelledby="import-title">
         <header className="modal-header">
           <div>
-            <p className="eyebrow">Add source material</p>
+            <p className="eyebrow">Nothing is added until you confirm</p>
             <h2 id="import-title">Import research</h2>
           </div>
           <button type="button" className="icon-button" onClick={onClose} disabled={busy} aria-label="Close import dialog">
@@ -223,7 +223,7 @@ export function ImportDialog({
                   Markdown, HTML, TXT, DOCX or text-based PDF · up to {formatBytes(MAX_IMPORT_BYTES)}
                 </p>
                 <label className="button secondary file-picker">
-                  Choose file
+                  Choose a file to preview
                   <input
                     type="file"
                     accept=".md,.markdown,.html,.htm,.txt,.docx,.pdf,text/markdown,text/html,text/plain,application/pdf,application/vnd.openxmlformats-officedocument.wordprocessingml.document"
@@ -259,13 +259,13 @@ export function ImportDialog({
                   rows={12}
                 />
                 <button type="button" className="button primary" onClick={previewPaste} disabled={!pasteText.trim()}>
-                  Preview extraction
+                  Preview what will import
                 </button>
               </div>
             )}
 
             <p className="security-note">
-              Files stay in this browser. Scripts are removed and never executed. The untouched original is stored with the import.
+              Nothing leaves this browser: scripts are stripped out and never run, and your untouched original is kept with the import for later download.
             </p>
             {error ? <div className="alert error" role="alert">{error}</div> : null}
           </div>
@@ -273,7 +273,7 @@ export function ImportDialog({
           <div className="modal-body">
             <div className="preview-heading">
               <div>
-                <p className="eyebrow">Extraction preview</p>
+                <p className="eyebrow">Import preview · check what was found</p>
                 <h3>{preview.original.fileName || (preview.format === 'paste' ? 'Pasted content' : 'Imported source')}</h3>
               </div>
               <button type="button" className="text-button" onClick={reset} disabled={busy}>
@@ -304,18 +304,18 @@ export function ImportDialog({
                 ))}
               </div>
             ) : (
-              <p className="notice">No extraction warnings. Review the sample before importing.</p>
+              <p className="notice">No warnings. Skim the sample below, then import.</p>
             )}
 
             <div className="block-sample">
               {blockSample(preview).map((sample) => (
                 <div key={sample.key} className="sample-row">
                   <span className="sample-type">{sample.type}</span>
-                  <span className="sample-text">{sample.text || '(empty)'}</span>
+                  <span className="sample-text">{sample.text || '(empty block)'}</span>
                 </div>
               ))}
               {preview.blocks.length > 10 ? (
-                <p className="muted">Plus {preview.blocks.length - 10} more blocks.</p>
+                <p className="muted">…and {preview.blocks.length - 10} more blocks you'll see after importing.</p>
               ) : null}
             </div>
 
@@ -329,7 +329,7 @@ export function ImportDialog({
                     checked={target === 'append'}
                     onChange={() => setTarget('append')}
                   />
-                  Append to the current document
+                  Add to the end of this document
                 </label>
               ) : null}
               <label>
@@ -344,7 +344,7 @@ export function ImportDialog({
             </fieldset>
 
             <p className="security-note">
-              The original source, extracted blocks, image files and source URLs are saved locally. Nothing is sent to a server.
+              The untouched original, the blocks above, images and source links are all saved on this device. Nothing is sent anywhere.
             </p>
             {error ? <div className="alert error" role="alert">{error}</div> : null}
 
@@ -353,7 +353,7 @@ export function ImportDialog({
                 Cancel
               </button>
               <button type="button" className="button primary" onClick={() => void confirm()} disabled={busy}>
-                {busy ? 'Saving import…' : target === 'append' ? 'Append import' : 'Create project'}
+                {busy ? 'Saving import…' : target === 'append' ? 'Add to this document' : 'Create new project'}
               </button>
             </footer>
           </div>

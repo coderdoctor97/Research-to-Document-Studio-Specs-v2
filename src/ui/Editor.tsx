@@ -60,14 +60,14 @@ const INSERTABLE: BlockType[] = [
 
 const BLOCK_HINTS: Record<BlockType, string> = {
   heading: 'Start a section',
-  paragraph: 'Body text',
-  list: 'Bulleted or numbered',
-  table: 'Structured data',
-  image: 'Stored locally',
-  video: 'Reference link',
+  paragraph: 'Write your main text',
+  list: 'List points or steps',
+  table: 'Compare rows of data',
+  image: 'Add a figure, saved locally',
+  video: 'Link to a video (never embedded)',
   citation: 'Evidence card',
-  callout: 'Call attention',
-  quote: 'Exact passage',
+  callout: 'Flag what readers must not miss',
+  quote: 'Quote a source word for word',
   divider: 'Section break',
 }
 
@@ -133,7 +133,7 @@ export function Editor({ projectId, onBack, onOpenProject, onNotify }: EditorPro
       })
       .catch((error: unknown) => {
         if (!active) return
-        setLoadError(error instanceof Error ? error.message : 'The project could not be opened.')
+        setLoadError(error instanceof Error ? error.message : "Couldn't open this project.")
         setLoading(false)
       })
     return () => {
@@ -186,7 +186,7 @@ export function Editor({ projectId, onBack, onOpenProject, onNotify }: EditorPro
       }
       return true
     } catch (error) {
-      const message = error instanceof Error ? error.message : 'The project could not be saved.'
+      const message = error instanceof Error ? error.message : "Couldn't save. Keep this tab open and try Save now again."
       setSaveState('error')
       setSaveError(message)
       onNotify(message, 'error')
@@ -211,7 +211,7 @@ export function Editor({ projectId, onBack, onOpenProject, onNotify }: EditorPro
         .catch((error: unknown) => {
           if (versionRef.current !== version) return
           setSaveState('error')
-          setSaveError(error instanceof Error ? error.message : 'Autosave failed.')
+          setSaveError(error instanceof Error ? error.message : "Couldn't autosave. Keep this tab open and use Save now to retry — your words are still on screen.")
         })
     }, 700)
     return () => window.clearTimeout(timer)
@@ -348,10 +348,10 @@ export function Editor({ projectId, onBack, onOpenProject, onNotify }: EditorPro
 
   const storeImage = useCallback(async (file: File): Promise<Asset> => {
     if (!file.type.startsWith('image/')) {
-      throw new Error('Choose a PNG, JPEG, GIF or WebP image.')
+      throw new Error("That isn't a usable image file. Choose a PNG, JPEG, GIF or WebP.")
     }
     if (file.size > MAX_IMPORT_BYTES) {
-      throw new Error(`Image files must be smaller than ${formatBytes(MAX_IMPORT_BYTES)}.`)
+      throw new Error(`That image is too large. Use one smaller than ${formatBytes(MAX_IMPORT_BYTES)}.`)
     }
     const dimensions = await readImageDimensions(file)
     const id = newId('asset')
@@ -398,9 +398,9 @@ export function Editor({ projectId, onBack, onOpenProject, onNotify }: EditorPro
       })
       setDirty(true)
       setSaveState('dirty')
-      onNotify('Image saved locally and attached to the block.')
+      onNotify('Image added — saved on this device and attached to the block.')
     } catch (error) {
-      onNotify(error instanceof Error ? error.message : 'The image could not be stored.', 'error')
+      onNotify(error instanceof Error ? error.message : "Couldn't save that image. Try a different file.", 'error')
     }
   }, [storeImage, onNotify])
 
@@ -421,9 +421,9 @@ export function Editor({ projectId, onBack, onOpenProject, onNotify }: EditorPro
       })
       setDirty(true)
       setSaveState('dirty')
-      onNotify('Image added to the media registry.')
+      onNotify('Image saved to Media — insert it into the document from there.')
     } catch (error) {
-      onNotify(error instanceof Error ? error.message : 'The image could not be stored.', 'error')
+      onNotify(error instanceof Error ? error.message : "Couldn't save that image. Try a different file.", 'error')
     }
   }, [storeImage, onNotify])
 
@@ -453,18 +453,18 @@ export function Editor({ projectId, onBack, onOpenProject, onNotify }: EditorPro
     try {
       const original = await getImportOriginal(record.blobKey)
       if (!original) {
-        onNotify('The original import is no longer in local storage.', 'error')
+        onNotify("That original file is no longer stored here. Your document's blocks are unaffected — only the untouched original is gone.", 'error')
         return
       }
       downloadBlob(original.blob, downloadNameForImport(record.fileName, record.format))
     } catch (error) {
-      onNotify(error instanceof Error ? error.message : 'The original import could not be downloaded.', 'error')
+      onNotify(error instanceof Error ? error.message : "Couldn't download that original. Try again.", 'error')
     }
   }, [onNotify])
 
   const openImportWithFile = (file: File | null) => {
     if (file && !formatFromFileName(file.name)) {
-      onNotify('Use Markdown, HTML, TXT, DOCX or a text-based PDF.', 'error')
+      onNotify("That file type can't be imported. Use Markdown, HTML, TXT, DOCX or a text-based PDF.", 'error')
       return
     }
     setImportFile(file)
@@ -477,7 +477,7 @@ export function Editor({ projectId, onBack, onOpenProject, onNotify }: EditorPro
       const document = await documentFromImport(preview)
       await saveDocument(document)
       setImportOpen(false)
-      onNotify('New project created from the import.')
+      onNotify('Your import is now a new project.')
       onOpenProject(document.id)
       return
     }
@@ -493,7 +493,7 @@ export function Editor({ projectId, onBack, onOpenProject, onNotify }: EditorPro
     setSaveState('saved')
     setImportOpen(false)
     setSelectedBlockId(preview.blocks[0]?.id ?? selectedBlockId)
-    onNotify(`Appended ${preview.blocks.length} blocks and ${preview.sources.length} sources.`)
+    onNotify(`Added ${preview.blocks.length} block${preview.blocks.length === 1 ? '' : 's'} and ${preview.sources.length} source${preview.sources.length === 1 ? '' : 's'} to the end of this document.`)
   }
 
   const handleDragEnter = (event: React.DragEvent) => {
@@ -520,7 +520,7 @@ export function Editor({ projectId, onBack, onOpenProject, onNotify }: EditorPro
     return (
       <div className="editor-loading">
         <div className="progress-line" />
-        <p>Opening project from local storage…</p>
+        <p>Opening your project…</p>
       </div>
     )
   }
@@ -529,7 +529,7 @@ export function Editor({ projectId, onBack, onOpenProject, onNotify }: EditorPro
     return (
       <div className="editor-loading">
         <p className="eyebrow">Project unavailable</p>
-        <h2>{loadError || 'This project could not be loaded.'}</h2>
+        <h2>{loadError || "This project couldn't be loaded."}</h2>
         <button type="button" className="button primary" onClick={onBack}>Back to projects</button>
       </div>
     )
@@ -540,8 +540,8 @@ export function Editor({ projectId, onBack, onOpenProject, onNotify }: EditorPro
   const saveLabel =
     saveState === 'saving' ? 'Saving…' :
     saveState === 'dirty' ? 'Unsaved changes' :
-    saveState === 'error' ? 'Save failed' :
-    'Saved locally'
+    saveState === 'error' ? "Couldn't save" :
+    'Saved on this device'
 
   return (
     <div
@@ -560,7 +560,7 @@ export function Editor({ projectId, onBack, onOpenProject, onNotify }: EditorPro
             if (saved) onBack()
           }} aria-label="Back to projects" title="Back to projects">←</button>
           <div className="title-edit">
-            <span className="eyebrow">Local project</span>
+            <span className="eyebrow">Project · stays on this device</span>
             <input
               value={titleDraft}
               onChange={(event) => setTitleDraft(event.target.value)}
@@ -605,7 +605,7 @@ export function Editor({ projectId, onBack, onOpenProject, onNotify }: EditorPro
           </div>
           <nav className="outline-list" aria-label="Document outline">
             {outline.length === 0 ? (
-              <p className="muted small">Headings you add will form the outline. Select any heading to jump to it.</p>
+              <p className="muted small">No headings yet. Add a heading block and it will appear here, so you can jump between sections.</p>
             ) : (
               outline.map((heading, index) => (
                 <button
@@ -648,7 +648,7 @@ export function Editor({ projectId, onBack, onOpenProject, onNotify }: EditorPro
           <div className="canvas-toolbar">
             <div>
               <p className="eyebrow">Draft</p>
-              <p className="muted small">{sizeLabel(studioDocument)} · autosaves after a short pause</p>
+              <p className="muted small">{sizeLabel(studioDocument)} · autosaves a moment after you stop typing</p>
             </div>
             <div className="canvas-toolbar-actions">
               <span className="muted small">{stats?.words.toLocaleString()} words</span>
@@ -663,7 +663,7 @@ export function Editor({ projectId, onBack, onOpenProject, onNotify }: EditorPro
               <section className="empty-document">
                 <p className="eyebrow">Empty document</p>
                 <h2>Start with a heading, or bring in source material.</h2>
-                <p>Imports keep their original files, links, citations and images. You can edit every block and still download the untouched original later.</p>
+                <p>Imported material keeps its original file, links, citations and images — edit every block freely, and the untouched original stays downloadable.</p>
                 <div className="button-row">
                   <button type="button" className="button primary" onClick={() => setImportOpen(true)}>Import research</button>
                   <button type="button" className="button secondary" onClick={() => addBlock('heading')}>Add heading</button>
@@ -701,7 +701,7 @@ export function Editor({ projectId, onBack, onOpenProject, onNotify }: EditorPro
                 + {BLOCK_TYPE_LABELS[type]}
               </button>
             ))}
-            {selectedBlock ? <span className="muted small add-bar-hint">after selected block</span> : null}
+            {selectedBlock ? <span className="muted small add-bar-hint">goes after the selected block</span> : null}
           </div>
         </main>
 
@@ -738,7 +738,7 @@ export function Editor({ projectId, onBack, onOpenProject, onNotify }: EditorPro
         <div className="drop-overlay" aria-hidden="true">
           <div>
             <span className="drop-mark">↓</span>
-            <strong>Drop to import research</strong>
+            <strong>Drop to see what will import</strong>
             <span>Markdown, HTML, TXT, DOCX or text-based PDF</span>
           </div>
         </div>

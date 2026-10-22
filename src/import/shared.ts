@@ -79,13 +79,13 @@ export function dataUrlToBlob(dataUrl: string): DecodedDataUrl | null {
 export function assetStatusLabel(status: string): string {
   switch (status) {
     case 'local':
-      return 'Saved locally'
+      return 'Saved on this device'
     case 'remote':
-      return 'Remote URL'
+      return 'Linked from the web'
     case 'unresolved':
-      return 'Unresolved'
+      return 'No working source'
     case 'failed':
-      return 'Retrieval failed'
+      return "Couldn't be fetched"
     default:
       return status
   }

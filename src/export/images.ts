@@ -196,7 +196,7 @@ async function resolveBlockImage(
       warning(
         warnings,
         'image-missing-local',
-        'A locally saved image file is missing from browser storage. The export shows a placeholder.',
+        'A saved image file is missing from this browser, so a placeholder is exported instead. Re-upload the image on its block to include it.',
         block.id,
       )
     }
@@ -208,7 +208,7 @@ async function resolveBlockImage(
       blob = decoded.blob
       mimeType = decoded.mimeType
     } else {
-      warning(warnings, 'image-data-invalid', 'An embedded image could not be decoded.', block.id)
+      warning(warnings, 'image-data-invalid', "An embedded image couldn't be read, so a placeholder is exported instead. Re-add it as an image block if you need it.", block.id)
       sourceUrl = ''
     }
   }
@@ -227,7 +227,7 @@ async function resolveBlockImage(
       warning(
         warnings,
         'image-fetch-failed',
-        `An image could not be downloaded (${reason}). The URL is kept and the export shows a placeholder.`,
+        `An image couldn't be downloaded (${reason}), so a placeholder is exported. The link is kept — check it, or upload the image file to embed it.`,
         block.id,
       )
     }
@@ -238,14 +238,14 @@ async function resolveBlockImage(
       warning(
         warnings,
         'image-source-missing',
-        'An image block has no stored file or URL. The export shows a placeholder.',
+        'An image block has no saved file or link, so a placeholder is exported. Add a file or link on the block to include a real picture.',
         block.id,
       )
     } else if (!/^https?:\/\//i.test(sourceUrl) && !sourceUrl.startsWith('data:')) {
       warning(
         warnings,
         'image-url-unsupported',
-        `An image URL is not a portable http(s) address and cannot be embedded: ${sourceUrl.slice(0, 160)}`,
+        `An image address isn't a full web (http/https) link, so the image can't be embedded: ${sourceUrl.slice(0, 160)}. Use the full address, or upload the file.`,
         block.id,
       )
     }
@@ -258,7 +258,7 @@ async function resolveBlockImage(
     warning(
       warnings,
       'image-type-unknown',
-      'An image format could not be identified. PDF and DOCX export may not embed it.',
+      "An image's format couldn't be identified, so exports may not embed it. Convert it to PNG or JPEG to be safe.",
       block.id,
     )
   }

@@ -77,7 +77,7 @@ function BlockProperties({
             <input type="checkbox" checked={block.ordered} onChange={(event) => onChange({ ...block, ordered: event.target.checked })} />
             <span>Numbered list</span>
           </label>
-          <p className="muted small">{block.items.length} item{block.items.length === 1 ? '' : 's'}. Edit indentation on each row.</p>
+          <p className="muted small">{block.items.length} item{block.items.length === 1 ? '' : 's'} — indent with the ← → arrows on each row.</p>
         </div>
       ) : null}
 
@@ -103,7 +103,7 @@ function BlockProperties({
         <>
           <label className="field">
             <span>Alt text (required for accessibility)</span>
-            <input value={block.alt} onChange={(event) => onChange({ ...block, alt: event.target.value })} placeholder="Describe the image" />
+            <input value={block.alt} onChange={(event) => onChange({ ...block, alt: event.target.value })} placeholder="Describe it for someone who can't see it" />
           </label>
           <label className="field">
             <span>Caption</span>
@@ -114,7 +114,7 @@ function BlockProperties({
             <input value={block.attribution} onChange={(event) => onChange({ ...block, attribution: event.target.value })} placeholder="Creator or rights holder" />
           </label>
           <label className="field">
-            <span>Image URL (fallback / remote)</span>
+            <span>Or link to an image on the web</span>
             <input value={block.url ?? ''} onChange={(event) => onChange({ ...block, url: event.target.value, status: event.target.value ? 'remote' : block.status })} placeholder="https://…" />
           </label>
           <div className="field-row">
@@ -151,7 +151,7 @@ function BlockProperties({
               className="text-button danger"
               onClick={() => onChange({ ...block, assetId: undefined, status: block.url ? 'remote' : 'unresolved' })}
             >
-              Detach saved image
+              Unlink saved image (kept in Media)
             </button>
           ) : null}
         </>
@@ -171,12 +171,12 @@ function BlockProperties({
               ))}
             </select>
           </label>
-          <p className="muted small">Label, quote, URL and note are edited on the block.</p>
+          <p className="muted small">Edit the label, quote, URL and note directly on the block.</p>
         </>
       ) : null}
 
       {block.type === 'video' ? (
-        <p className="muted small">The video URL is preserved as a reference. Embedded players are not loaded in the editor or exports.</p>
+        <p className="muted small">Readers get a link, not a player — video URLs are kept as references and never embedded, here or in exports.</p>
       ) : null}
 
       <div className="inspector-divider" />
@@ -190,7 +190,7 @@ function BlockProperties({
           ))}
         </div>
       ) : (
-        <p className="muted small">No linked sources on this block. Links inside its text remain in the source list when imported.</p>
+        <p className="muted small">No sources are linked to this block yet. Links found at import still appear under Sources.</p>
       )}
       <dl className="meta-list">
         <div><dt>Block ID</dt><dd>{block.id}</dd></div>
@@ -219,7 +219,7 @@ function DocumentProperties({
     <div className="inspector-section">
       <p className="inspector-kicker">Document settings</p>
       <label className="field">
-        <span>PDF / DOCX theme</span>
+        <span>Export style (PDF &amp; Word)</span>
         <select
           value={studioDocument.exportSettings.theme}
           onChange={(event) => onDocumentChange({
@@ -252,7 +252,7 @@ function DocumentProperties({
             exportSettings: { ...studioDocument.exportSettings, includeSourceList: event.target.checked },
           })}
         />
-        <span>Append a source list to exports</span>
+        <span>Add a source list at the end of exports</span>
       </label>
 
       <div className="inspector-divider" />
@@ -272,10 +272,10 @@ function DocumentProperties({
       <div className="inspector-divider" />
       <div className="section-heading">
         <p className="inspector-kicker">Imports</p>
-        <button type="button" className="text-button" onClick={onOpenImport}>+ Add import</button>
+        <button type="button" className="text-button" onClick={onOpenImport}>+ Import more research</button>
       </div>
       {studioDocument.imports.length === 0 ? (
-        <p className="muted small">No imports yet. Source files and originals will be listed here.</p>
+        <p className="muted small">No imports yet. Import research and each untouched original will be kept here, ready to download.</p>
       ) : (
         <div className="import-list">
           {studioDocument.imports.map((record) => (
@@ -345,7 +345,7 @@ function SourcesPanel({
   }
 
   const removeSource = (source: Source) => {
-    if (!window.confirm('Remove this source? Citations keep their own label, quote and URL.')) return
+    if (!window.confirm('This source will be removed from the list. Citations keep their own label, quote and URL, so no document text is lost.\n\nRemove this source?')) return
     onDocumentChange({
       ...studioDocument,
       sources: studioDocument.sources.filter((candidate) => candidate.id !== source.id),
@@ -358,7 +358,7 @@ function SourcesPanel({
   return (
     <div className="inspector-section">
       <p className="inspector-kicker">Source registry</p>
-      <p className="muted small">Every imported link is recorded here. Citations can point at a registered source.</p>
+      <p className="muted small">Every link found in your imports lands here, so citations can point back to it.</p>
       <div className="source-form">
         <label className="field"><span>Label</span><input value={label} onChange={(event) => setLabel(event.target.value)} placeholder="Author or publication" /></label>
         <label className="field"><span>URL</span><input value={url} onChange={(event) => setUrl(event.target.value)} placeholder="https://…" /></label>
@@ -368,7 +368,7 @@ function SourcesPanel({
       </div>
       <div className="inspector-divider" />
       {studioDocument.sources.length === 0 ? (
-        <p className="muted small">No sources registered.</p>
+        <p className="muted small">No sources yet. Add one above, or import content and its links will be recorded for you.</p>
       ) : (
         <ol className="source-list">
           {studioDocument.sources.map((source) => (
@@ -428,9 +428,9 @@ function MediaPanel({
           />
         </label>
       </div>
-      <p className="muted small">Images live in local browser storage. Remote URLs stay as references until embedded at export.</p>
+      <p className="muted small">Uploaded images are saved on this device. Web images stay as links until export embeds them for you.</p>
       {studioDocument.assets.length === 0 ? (
-        <p className="muted small">No media assets yet. Import an HTML or DOCX file, or upload an image.</p>
+        <p className="muted small">No media yet. Import an HTML or DOCX file with images, or upload an image to reuse across blocks.</p>
       ) : (
         <div className="media-list">
           {studioDocument.assets.map((asset) => {
@@ -445,7 +445,7 @@ function MediaPanel({
                   )}
                 </div>
                 <div className="media-body">
-                  <strong>{asset.alt || '(no alt text)'}</strong>
+                  <strong>{asset.alt || '(no alt text yet — add it below)'}</strong>
                   <span className="muted small">{assetStatusLabel(asset.status)} · {used} use{used === 1 ? '' : 's'}</span>
                   {asset.mimeType ? <span className="muted small">{asset.mimeType}{asset.width && asset.height ? ` · ${asset.width}×${asset.height}` : ''}</span> : null}
                   {asset.originalUrl ? <a className="source-url" href={asset.originalUrl} target="_blank" rel="noreferrer noopener">{asset.originalUrl}</a> : null}
@@ -458,15 +458,15 @@ function MediaPanel({
                     <input value={asset.caption} onChange={(event) => updateAsset(asset.id, { caption: event.target.value })} />
                   </label>
                   <div className="media-actions">
-                    <button type="button" className="text-button" onClick={() => onInsertAsset(asset.id)}>Insert image block</button>
+                    <button type="button" className="text-button" onClick={() => onInsertAsset(asset.id)}>Add to document</button>
                     <button
                       type="button"
                       className="text-button danger"
                       disabled={used > 0}
-                      title={used > 0 ? 'Remove the image blocks first' : 'Remove from registry'}
+                      title={used > 0 ? 'Remove the image blocks first' : 'Remove from Media'}
                       onClick={() => {
                         if (used > 0) {
-                          onNotify('This asset is used by an image block and cannot be removed from the registry.', 'error')
+                          onNotify("This image is used in the document, so it can't be removed. Delete its image block first.", 'error')
                           return
                         }
                         onDocumentChange({
@@ -500,7 +500,7 @@ function AiPanel({ document: studioDocument, onNotify }: { document: StudioDocum
     <div className="inspector-section">
       <p className="inspector-kicker">AI assistant prompts</p>
       <p className="muted small">
-        This studio does not call a model. Copy a prompt into your own assistant, then paste the Markdown result back through Import. The reusable skill lives at <code>{ORGANIZER_SKILL_PATH}</code>.
+        Get structuring help without sending anything anywhere — this studio never calls a model. Copy a prompt into your own assistant, then bring the Markdown back through Import. The reusable skill lives at <code>{ORGANIZER_SKILL_PATH}</code>.
       </p>
       <div className="segmented wrap" role="group" aria-label="Prompt type">
         <button type="button" className={kind === 'structure' ? 'active' : ''} onClick={() => setKind('structure')}>Structure</button>
@@ -514,7 +514,7 @@ function AiPanel({ document: studioDocument, onNotify }: { document: StudioDocum
           className="button primary compact"
           onClick={async () => {
             const ok = await copyText(prompt)
-            onNotify(ok ? 'Prompt copied to clipboard.' : 'Clipboard access was blocked. Select the text and copy manually.', ok ? 'info' : 'error')
+            onNotify(ok ? 'Prompt copied — paste it into your assistant.' : 'Clipboard access was blocked. Select the text and copy it manually.', ok ? 'info' : 'error')
           }}
         >
           Copy prompt
@@ -524,7 +524,7 @@ function AiPanel({ document: studioDocument, onNotify }: { document: StudioDocum
           className="button secondary compact"
           onClick={async () => {
             const ok = await copyText(ORGANIZER_SKILL_PATH)
-            onNotify(ok ? 'Skill path copied.' : 'Clipboard access was blocked.', ok ? 'info' : 'error')
+            onNotify(ok ? 'Skill path copied.' : 'Clipboard access was blocked — the path is shown above.', ok ? 'info' : 'error')
           }}
         >
           Copy skill path
@@ -533,10 +533,10 @@ function AiPanel({ document: studioDocument, onNotify }: { document: StudioDocum
       <div className="inspector-divider" />
       <p className="inspector-kicker">How to round-trip</p>
       <ol className="steps-list">
-        <li>Copy a prompt and supply your source notes to your assistant.</li>
+        <li>Give the prompt and your source notes to your assistant.</li>
         <li>Ask for Markdown, with links and quotes preserved.</li>
-        <li>Use Import → Paste → Markdown to review and append the result.</li>
-        <li>Check every citation in the source registry before export.</li>
+        <li>Use Import → Paste → Markdown to check the result before adding it.</li>
+        <li>Check every citation under Sources before you export.</li>
       </ol>
     </div>
   )
@@ -603,7 +603,7 @@ export function Inspector({
           ) : (
             <div className="inspector-section">
               <p className="inspector-kicker">No block selected</p>
-              <p className="muted small">Select a block in the document to edit its type-specific settings and see provenance.</p>
+              <p className="muted small">Select any block to adjust its settings and see where it came from.</p>
               {studioDocument.blocks.length > 0 ? (
                 <button type="button" className="button secondary compact" onClick={() => onSelectBlock(studioDocument.blocks[0].id)}>
                   Select first block

@@ -12,7 +12,7 @@ export interface MarkdownImportRequest {
 
 export function importMarkdown(request: MarkdownImportRequest): ImportPreview {
   if (!request.text.trim()) {
-    throw new ImportError('The pasted content is empty.')
+    throw new ImportError('There is no readable text to import. Paste or choose content with text in it.')
   }
 
   const html = marked.parse(request.text, {
@@ -32,7 +32,7 @@ export function importMarkdown(request: MarkdownImportRequest): ImportPreview {
   if (/<(?:script|style|iframe|object|embed)\b/i.test(request.text)) {
     preview.warnings.unshift({
       code: 'markdown-raw-html',
-      message: 'Embedded HTML in the Markdown was sanitized before import.',
+      message: 'Raw HTML inside the Markdown was cleaned for safety — scripts and embeds were removed and never run.',
       severity: 'info',
     })
   }

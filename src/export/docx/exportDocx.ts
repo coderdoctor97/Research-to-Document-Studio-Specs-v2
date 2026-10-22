@@ -256,7 +256,7 @@ function imageParagraphs(
     if (resolved) {
       warnings.push({
         code: 'docx-image-format',
-        message: `${resolved.imageType.toUpperCase()} images are not supported by DOCX export; a text placeholder was written instead.`,
+        message: `${resolved.imageType.toUpperCase()} images can't go into a DOCX, so a text placeholder was written instead. Convert the image to PNG or JPEG to include it.`,
         blockId: block.id,
       })
     }
@@ -584,14 +584,15 @@ export async function exportDocx(
     blob = await Packer.toBlob(docx)
   } catch (error) {
     throw new Error(
-      `DOCX export failed: ${error instanceof Error ? error.message : String(error)}`,
+      `Couldn't build the DOCX: ${error instanceof Error ? error.message : String(error)}`,
     )
   }
 
   const validation: ExportValidation = await validateDocxBlob(blob, document, images)
   if (imageWarnings.length > 0) {
+    const warningCount = new Set(imageWarnings.map((warning) => warning.message)).size
     validation.warnings.push(
-      `${new Set(imageWarnings.map((warning) => warning.message)).size} image warning(s); unavailable images appear as text placeholders.`,
+      `${warningCount} image warning${warningCount === 1 ? '' : 's'} — images that couldn't be included appear as text placeholders. Fix those image blocks to embed the real pictures.`,
     )
   }
 

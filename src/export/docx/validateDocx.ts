@@ -174,7 +174,7 @@ export async function validateDocxBlob(
   }
 
   if (expectedImages > 0) {
-    warnings.push(`${expectedImages} image${expectedImages === 1 ? '' : 's'} embedded as native Word drawings.`)
+    warnings.push(`${expectedImages} image${expectedImages === 1 ? '' : 's'} embedded directly in the Word file.`)
   }
 
   details = `${paragraphs.length} paragraph${paragraphs.length === 1 ? '' : 's'}, ${tableCount} table${tableCount === 1 ? '' : 's'}, ${drawingCount} embedded image${drawingCount === 1 ? '' : 's'}, ${hyperlinkCount} hyperlink${hyperlinkCount === 1 ? '' : 's'}, ${Math.round(blob.size / 1024)} KB.`

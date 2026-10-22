@@ -41,7 +41,7 @@ export async function validatePdfBytes(bytes: Uint8Array): Promise<ExportValidat
     ok: errors.length === 0,
     errors,
     warnings,
-    details: `${pageCount} page${pageCount === 1 ? '' : 's'}, ${Math.round(bytes.byteLength / 1024)} KB, parseable PDF structure.`,
+    details: `${pageCount} page${pageCount === 1 ? '' : 's'}, ${Math.round(bytes.byteLength / 1024)} KB, checked and readable as a PDF.`,
   }
 }
 
@@ -58,7 +58,7 @@ export async function exportPdf(
     if (resolved && resolved.imageType !== 'png' && resolved.imageType !== 'jpg') {
       warnings.push({
         code: 'pdf-image-format',
-        message: `${resolved.imageType.toUpperCase()} images are not supported by PDF export; a placeholder is shown instead.`,
+        message: `${resolved.imageType.toUpperCase()} images can't go into a PDF, so a placeholder is shown instead. Convert the image to PNG or JPEG to include it.`,
         blockId: block.id,
       })
     }
@@ -72,9 +72,9 @@ export async function exportPdf(
   } catch (error) {
     const message = error instanceof Error ? error.message : String(error)
     const fontHint = /WinAnsi|encode|font/i.test(message)
-      ? ' Built-in PDF fonts cover Latin text only; unsupported characters can cause this failure.'
+      ? ' The built-in PDF fonts cover Latin text only — remove unsupported characters (such as emoji or non-Latin script), or export DOCX instead.'
       : ''
-    throw new Error(`PDF export failed: ${message}.${fontHint}`)
+    throw new Error(`Couldn't build the PDF: ${message.replace(/\.$/, '')}.${fontHint}`)
   }
 
   const bytes = await blobToBytes(blob)
@@ -84,8 +84,9 @@ export async function exportPdf(
     validation.ok = false
   }
   if (imageWarnings.length > 0) {
+    const warningCount = new Set(imageWarnings.map((warning) => warning.message)).size
     validation.warnings.push(
-      `${new Set(imageWarnings.map((warning) => warning.message)).size} image warning(s); placeholders were rendered where images were unavailable.`,
+      `${warningCount} image warning${warningCount === 1 ? '' : 's'} — a placeholder was used wherever an image couldn't be included. Fix those image blocks to embed the real pictures.`,
     )
   }
 

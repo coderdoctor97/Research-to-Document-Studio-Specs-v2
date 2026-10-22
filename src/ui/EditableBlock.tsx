@@ -74,7 +74,7 @@ function ListEditor({ block, onUpdate }: { block: Extract<Block, { type: 'list' 
               html={item.html}
               singleLine
               ariaLabel={`List item ${itemIndex + 1}`}
-              placeholder="List item"
+              placeholder="New point…"
               onCommit={(html) => updateItem(item.id, { html })}
             />
             <span className="list-controls">
@@ -213,12 +213,12 @@ function ImageEditor({
         />
       ) : (
         <div className="image-placeholder" style={{ width: `${block.widthPercent}%` }}>
-          <strong>{loading ? 'Loading image…' : 'Image unavailable'}</strong>
-          <span>{block.alt || 'No alt text'}</span>
+          <strong>{loading ? 'Loading your image…' : 'Image unavailable'}</strong>
+          <span>{block.alt || 'No alt text yet'}</span>
           {error ? <span>{error}</span> : null}
           {!loading ? (
             <label className="button secondary compact">
-              Choose image
+              Choose an image file
               <input
                 type="file"
                 accept="image/png,image/jpeg,image/gif,image/webp"
@@ -290,7 +290,7 @@ export function EditableBlock({
             html={block.html}
             singleLine
             ariaLabel={`Heading ${block.level}`}
-            placeholder="Heading"
+            placeholder="Section heading…"
             onCommit={(html) => onUpdate({ ...block, html })}
           />
         ) : null}
@@ -318,7 +318,7 @@ export function EditableBlock({
               className="title-input"
               value={block.title}
               onChange={(event) => onUpdate({ ...block, title: event.target.value })}
-              placeholder="Video title"
+              placeholder="Video title (shown to readers)"
               aria-label="Video title"
             />
             <input
@@ -333,7 +333,7 @@ export function EditableBlock({
                 Open source ↗
               </a>
             ) : (
-              <span className="muted">Embedded playback is not available; the URL is preserved as a reference.</span>
+              <span className="muted">Add a full https:// address and readers will get a clickable link. Videos are never embedded.</span>
             )}
             <input
               className="caption-input"
@@ -352,13 +352,13 @@ export function EditableBlock({
               className="title-input"
               value={block.label}
               onChange={(event) => onUpdate({ ...block, label: event.target.value })}
-              placeholder="Source label"
+              placeholder="Source label — e.g. author, year or publication"
               aria-label="Citation label"
             />
             <textarea
               value={block.quote}
               onChange={(event) => onUpdate({ ...block, quote: event.target.value })}
-              placeholder="Quoted passage (optional)"
+              placeholder="Exact quoted passage (optional)"
               aria-label="Citation quote"
               rows={2}
             />
@@ -391,7 +391,7 @@ export function EditableBlock({
             <InlineEditable
               html={block.html}
               ariaLabel="Callout text"
-              placeholder="Callout text"
+              placeholder="The one thing readers must not miss…"
               onCommit={(html) => onUpdate({ ...block, html })}
             />
           </div>
@@ -402,14 +402,14 @@ export function EditableBlock({
             <InlineEditable
               html={block.html}
               ariaLabel="Quoted text"
-              placeholder="Quoted text"
+              placeholder="Paste the passage word for word…"
               onCommit={(html) => onUpdate({ ...block, html })}
             />
             <div className="quote-meta">
               <input
                 value={block.attribution}
                 onChange={(event) => onUpdate({ ...block, attribution: event.target.value })}
-                placeholder="Attribution"
+                placeholder="Who said it?"
                 aria-label="Quote attribution"
               />
               <input

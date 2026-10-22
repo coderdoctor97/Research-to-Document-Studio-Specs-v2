@@ -134,7 +134,7 @@ function registerInlineHtml(rawHtml: string, context: HtmlContext): InlineResult
     warn(
       context,
       'relative-link',
-      'A relative link was kept as text because no base URL was available to resolve it.',
+      "A relative link was kept as plain text — without the page's full web address it can't be made clickable in exports.",
       'info',
     )
   }
@@ -208,7 +208,7 @@ function makeImageBlock(
     warn(
       context,
       'image-without-source',
-      'An image without a source URL was kept as an empty image placeholder.',
+      'An image with no file or web address was kept as an empty placeholder — add one on the block to show it.',
     )
     return {
       id: newId('blk'),
@@ -228,7 +228,7 @@ function makeImageBlock(
   if (src.startsWith('data:')) {
     const decoded = dataUrlToBlob(src)
     if (!decoded) {
-      warn(context, 'image-data-invalid', 'A data-URL image could not be decoded.')
+      warn(context, 'image-data-invalid', "An embedded image couldn't be read, so its placeholder shows no picture. Re-add it as an image block if you need it.")
       asset = {
         id: newId('asset'),
         kind: 'image',
@@ -269,7 +269,7 @@ function makeImageBlock(
     warn(
       context,
       'image-relative-url',
-      `An image with a relative or unsupported URL was kept as unresolved: ${src.slice(0, 120)}`,
+      `An image couldn't be linked because its address is incomplete or unsupported: ${src.slice(0, 120)}. It is kept as a placeholder — add a file or a full web address on the block to show it.`,
     )
     asset = {
       id: newId('asset'),
@@ -772,10 +772,10 @@ function walkNode(node: Node, context: HtmlContext): void {
       warn(
         context,
         'embed-as-link',
-        'Embedded content was replaced by a link. Never executed during import.',
+        'Embedded content was replaced by a link, so nothing external runs inside your document.',
       )
     } else {
-      warn(context, `skipped-${tag}`, `Element <${tag}> was removed during import.`, tag === 'script' ? 'warning' : 'info')
+      warn(context, `skipped-${tag}`, `A <${tag}> element was removed during import — only readable content is kept.`, tag === 'script' ? 'warning' : 'info')
     }
     return
   }
@@ -941,14 +941,14 @@ export function importHtml(request: HtmlImportRequest): ImportPreview {
     warn(
       context,
       'inline-handlers',
-      'Inline event handler attributes were removed from imported content.',
+      'Clickable scripts hidden in the HTML (event handlers) were removed — imported code never runs.',
     )
   }
   if (document.querySelector('base[href]')) {
     warn(
       context,
       'base-url-ignored',
-      'A document base URL was ignored; relative links and images remain unresolved.',
+      "The page's base web address was ignored, so relative links and images can't be resolved and won't be clickable in exports.",
       'info',
     )
   }
@@ -957,7 +957,7 @@ export function importHtml(request: HtmlImportRequest): ImportPreview {
 
   if (context.blocks.length === 0) {
     throw new ImportError(
-      'No readable content was found in this HTML. It may contain only scripts, styles, or unsupported media.',
+      'No readable content was found in this HTML. It may contain only scripts, styles or unsupported media — try copying the visible text and using Paste instead.',
     )
   }
 
